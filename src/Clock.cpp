@@ -32,15 +32,14 @@ void Clock::loop() {
 }
 
 void Clock::updateDisplay() {
-    oled.clearAll();    // Display leeren
     if (ntp.isTimeValid()) {
         time_t currentTime = ntp.now();
         struct tm* timeinfo = localtime(&currentTime);
         char buf[20];
         strftime(buf, sizeof(buf), "%H:%M:%S", timeinfo);
-        oled.showLineMessage(1, String(buf));
+        oled.showLineMessage(0, String(buf));
     } else {
-        oled.showLineMessage(2, "Zeit nicht valid");
+        oled.showLineMessage(0, "Zeit nicht valid");
     }
 }
 
