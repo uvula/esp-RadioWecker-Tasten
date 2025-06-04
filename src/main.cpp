@@ -28,7 +28,7 @@ void setup()
     i2cManager.registerDevice(&oled);
     Serial.println("Devices:");
     i2cManager.printDevices();
-    oled.clearAll();
+    oled.clearFixed();
     oled.setFixedLine(1, "Setup");
     led.begin(PIN_LED_BUILTIN);
     led.blink(150, 150, 3).start();
@@ -44,7 +44,7 @@ void setup()
     }
     oled.appendScrollLine("Staring clock");
     delay(1000);
-    oled.clearAll();
+    oled.clearFixed();
     clockx.begin();
 }
 
