@@ -37,18 +37,19 @@ void Clock::updateDisplay() {
         struct tm* timeinfo = localtime(&currentTime);
         char buf[20];
         strftime(buf, sizeof(buf), "%H:%M:%S", timeinfo);
-        oled.showLineMessage(0, String(buf));
+        oled.setFixedLine(0, String(buf));
     } else {
-        oled.showLineMessage(0, "Zeit nicht valid");
+        oled.setFixedLine(0, "Zeit nicht valid");
     }
+    oled.refresh();
 }
 
 void Clock::synchronizeTime() {
-    oled.showLineMessage(2, "Sync mit NTP...");
+    oled.appendScrollLine("Sync mit NTP...");
     ntp.begin();  // configTime() neu setzen
     if (ntp.waitForTime(10000)) {
-        oled.showLineMessage(3, "NTP sync OK");
+        oled.appendScrollLine("NTP sync OK");
     } else {
-        oled.showLineMessage(3, "NTP sync fehlgeschl.");
+        oled.appendScrollLine("NTP sync fehlgeschl.");
     }
 }

@@ -11,7 +11,7 @@ WifiManager::WifiManager(OledLineDisplay &oled, const WifiInfo &configInfo) : ol
 
 void WifiManager::begin()
 {
-    oled.appendLine(String("Starting WLAN"));
+    oled.setFixedLine(0, String("Starting WLAN"));
     WiFi.setHostname("esp32-firstUnit");
 
     if (!tryConnectStored())
@@ -33,13 +33,13 @@ bool WifiManager::tryConnectStored()
     me = WifiInfo(ssid, pass);
     Serial.print("Versuche Verbindung zu: ");
     Serial.println(ssid);
-    oled.appendLine("Versuche Verbindung zu: ");
-    oled.appendLine(ssid);
+    oled.appendScrollLine("Versuche Verbindung zu: ");
+    oled.appendScrollLine(ssid);
     const int maxAttempts = 3;
     for (int attempt = 1; attempt <= maxAttempts; ++attempt)
     {
         Serial.printf("Verbindungsversuch %d von %d...\n", attempt, maxAttempts);
-        oled.appendLine(String("Verbindungsversuch ") + attempt + " von " + maxAttempts);
+        oled.appendScrollLine(String("Verbindungsversuch ") + attempt + " von " + maxAttempts);
         WiFi.begin(ssid.c_str(), pass.c_str());
 
         unsigned long start = millis();
@@ -53,14 +53,14 @@ bool WifiManager::tryConnectStored()
         if (WiFi.status() == WL_CONNECTED)
         {
             Serial.println("WLAN verbunden: " + WiFi.localIP().toString());
-            oled.appendLine(String("WLAN verbunden: ") + WiFi.localIP().toString());
+            oled.appendScrollLine(String("WLAN verbunden: ") + WiFi.localIP().toString());
             me.setIP(WiFi.localIP().toString());
             return true;
         }
         else
         {
             Serial.println("Verbindung fehlgeschlagen.");
-            oled.appendLine("Verbindung fehlgeschlagen.");
+            oled.appendScrollLine("Verbindung fehlgeschlagen.");
             WiFi.disconnect(true);
             delay(1000); // Kleine Pause vor erneutem Versuch
         }
@@ -162,17 +162,18 @@ void WifiManager::loop()
     {
         server.handleClient();
     }
-    oled.appendLine(String("WLAN: ") + statusToString());
+    oled.appendScrollLine(String("WLAN: ") + statusToString());
 }
 
 void WifiManager::showConfigureMe(const WifiInfo &wifiInfo)
 {
     // Hier z. B. OLED-Text: "WLAN-Konfiguration..."
     Serial.println("OLED zeigt Konfigurationsmodus");
-    oled.showLineMessage(1, "Configure me");
-    oled.showLineMessage(2, "IP: " + configMe.getIP());
-    oled.showLineMessage(3, "SSID: " + configMe.getSSID());
-    oled.showLineMessage(4, "PWD: " + configMe.getPassword());
-    oled.showLineMessage(5, "Connect to Wifi and");
-    oled.showLineMessage(6, "fill mask");
+    oled.clearAll();
+    oled.setFixedLine(1, "Configure me");
+    oled.appendScrollLine("IP: " + configMe.getIP());
+    oled.appendScrollLine("SSID: " + configMe.getSSID());
+    oled.appendScrollLine("PWD: " + configMe.getPassword());
+    oled.appendScrollLine("Connect to Wifi and");
+    oled.appendScrollLine("fill mask");
 }

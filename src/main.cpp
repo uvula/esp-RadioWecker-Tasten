@@ -13,7 +13,8 @@ const int PIN_SCL = 22;
 
 Atm_led led;
 I2CManager i2cManager(Wire, PIN_SDA, PIN_SCL); // SDA, SCL
-OledLineDisplay oled;
+OledLineDisplay oled(2, 6);
+
 WifiInfo configInfo("ESP-Setup", "configure me");
 WifiManager wifi(oled, configInfo);
 NtpClient ntp(oled);
@@ -28,7 +29,7 @@ void setup()
     Serial.println("Devices:");
     i2cManager.printDevices();
     oled.clearAll();
-    oled.showLineMessage(1, "Setup");
+    oled.setFixedLine(1, "Setup");
     led.begin(PIN_LED_BUILTIN);
     led.blink(150, 150, 3).start();
 
@@ -39,9 +40,9 @@ void setup()
     if (ntp.waitForTime()) {
         ntp.showTime();
     } else {
-        oled.appendLine("NTP fehlgeschlagen");
+        oled.appendScrollLine("NTP fehlgeschlagen");
     }
-    oled.appendLine("Staring clock");
+    oled.appendScrollLine("Staring clock");
     delay(1000);
     oled.clearAll();
     clockx.begin();

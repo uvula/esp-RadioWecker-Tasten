@@ -19,9 +19,9 @@ public:
     bool isTimeValid() const;                      // Zeit wurde synchronisiert
 
 private:
+    OledLineDisplay& oled;
     const char* server;
     int gmtOffset;
     int daylightOffset;
-    OledLineDisplay& oled;
     bool timeValid = false;                         // Status speichern
 };

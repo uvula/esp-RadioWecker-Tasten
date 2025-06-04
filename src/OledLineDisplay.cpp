@@ -1,43 +1,77 @@
 #include "OledLineDisplay.h"
 
-OledLineDisplay::OledLineDisplay() {
-    lines.fill(""); // alle Zeilen leer
+OledLineDisplay::OledLineDisplay(uint8_t fixedLineCount, uint8_t scrollLineCount)
+    : numFixed(fixedLineCount), numScroll(scrollLineCount)
+{
+    fixedLines = new String[numFixed];
+    scrollLines = new String[numScroll];
+    clearFixed();
+    clearScroll();
 }
 
-void OledLineDisplay::showLineMessage(uint8_t line, const String& message) {
-    if (line >= MaxLines) return;
-    lines[line] = message;
-    redraw();
+OledLineDisplay::~OledLineDisplay() {
+    delete[] fixedLines;
+    delete[] scrollLines;
 }
 
-void OledLineDisplay::clearLine(uint8_t line) {
-    if (line >= MaxLines) return;
-    lines[line] = "";
-    redraw();
+void OledLineDisplay::setFixedLine(uint8_t index, const String& text) {
+    if (index < numFixed) {
+        fixedLines[index] = text;
+        refresh();
+    }
+}
+
+// **Private Methode nur in .cpp definieren, nicht im Header**
+void OledLineDisplay::shiftScrollLines() {
+    for (uint8_t i = 0; i < numScroll - 1; ++i) {
+        scrollLines[i] = scrollLines[i + 1];
+    }
+    scrollLines[numScroll - 1] = "";
+}
+
+void OledLineDisplay::appendScrollLine(const String& text) {
+    if (numScroll == 0) return;
+
+    shiftScrollLines();        // private Methode, nur hier definiert
+    scrollLines[numScroll - 1] = text;
+    refresh();
+}
+
+void OledLineDisplay::clearFixed() {
+    for (uint8_t i = 0; i < numFixed; ++i) {
+        fixedLines[i] = "";
+    }
+}
+
+void OledLineDisplay::clearScroll() {
+    for (uint8_t i = 0; i < numScroll; ++i) {
+        scrollLines[i] = "";
+    }
 }
 
 void OledLineDisplay::clearAll() {
-    lines.fill("");
-    redraw();
+    clearFixed();
+    clearScroll();
 }
 
-void OledLineDisplay::redraw() {
+void OledLineDisplay::refresh() {
     display.clearDisplay();
-    for (uint8_t i = 0; i < MaxLines; ++i) {
-        if (!lines[i].isEmpty()) {
-            display.setCursor(0, i * 8);
-            display.print(lines[i]);
-        }
-    }
-    display.display();
-}
 
-void OledLineDisplay::appendLine(const String& message) {
-    // Alle Zeilen eine Zeile nach oben schieben
-    for (uint8_t i = 0; i < MaxLines - 1; ++i) {
-        lines[i] = lines[i + 1];
+    // Zeilenhöhe (z.B. 8 Pixel, abhängig von Font)
+    const uint8_t lineHeight = 8;
+
+    // Fixed lines oben zeichnen
+    display.setCursor(0, 0);
+    for (uint8_t i = 0; i < numFixed; ++i) {
+        display.setCursor(0, i * lineHeight);
+        display.println(fixedLines[i]);
     }
-    // Neue Zeile unten einfügen
-    lines[MaxLines - 1] = message;
-    redraw();
+
+    // Scroll lines unten zeichnen
+    for (uint8_t i = 0; i < numScroll; ++i) {
+        display.setCursor(0, (numFixed + i) * lineHeight);
+        display.println(scrollLines[i]);
+    }
+
+    display.display();
 }

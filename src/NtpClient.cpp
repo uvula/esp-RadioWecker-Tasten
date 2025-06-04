@@ -9,7 +9,7 @@ NtpClient::NtpClient(OledLineDisplay& display,
       daylightOffset(daylightOffsetSeconds) {}
 
 void NtpClient::begin() {
-    oled.appendLine("NTP: Verbinde...");
+    oled.appendScrollLine("NTP: Verbinde...");
     configTime(gmtOffset, daylightOffset, server);
 }
 
@@ -21,13 +21,13 @@ bool NtpClient::waitForTime(int timeoutMillis) {
         delay(200);
         waited += 200;
         if (waited >= timeoutMillis) {
-            oled.appendLine("NTP: Timeout");
+            oled.appendScrollLine("NTP: Timeout");
             timeValid = false;
             return false;
         }
     }
 
-    oled.appendLine("NTP: Zeit erhalten");
+    oled.appendScrollLine("NTP: Zeit erhalten");
     timeValid = true;
     return true;
 }
@@ -55,5 +55,5 @@ String NtpClient::timeString() {
 }
 
 void NtpClient::showTime() {
-    oled.appendLine(timeString());
+    oled.appendScrollLine(timeString());
 }

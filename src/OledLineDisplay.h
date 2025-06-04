@@ -1,22 +1,28 @@
 #pragma once
-
 #include "OledDisplay.h"
-#include <array>
+#include <Arduino.h>
 
 class OledLineDisplay : public OledDisplay {
 public:
-    static constexpr uint8_t MaxLines = 8; // 64px / 8px (bei TextSize 1)
+    OledLineDisplay(uint8_t fixedLineCount, uint8_t scrollLineCount);
+    ~OledLineDisplay();
 
-    OledLineDisplay();
+    void setFixedLine(uint8_t index, const String& text);
+    void appendScrollLine(const String& text);
 
-    void showLineMessage(uint8_t line, const String& message);
-    void appendLine(const String& message);
-
-    void clearLine(uint8_t line);
+    void clearFixed();
+    void clearScroll();
     void clearAll();
 
-private:
-    std::array<String, MaxLines> lines;
+    void refresh();
 
-    void redraw();
+private:
+    uint8_t numFixed;
+    uint8_t numScroll;
+
+    String* fixedLines;
+    String* scrollLines;
+
+    void shiftScrollLines();
+
 };
