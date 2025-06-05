@@ -6,7 +6,7 @@
 class IntervalTrigger {
   public:
     IntervalTrigger(unsigned long intervalMillis)
-      : interval(intervalMillis), lastTrigger(0) {}
+      : interval(intervalMillis), lastTrigger(0 - intervalMillis) {}
 
     // Führt die Aktion aus, wenn das Intervall abgelaufen ist
     void check(std::function<void()> action) {

@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 Clock::Clock(NtpClient &ntpClient, OledLineDisplay &display)
-    : ntp(ntpClient), oled(display), syncTrigger(3UL * 60 * 1000),
+    : ntp(ntpClient), oled(display), syncTrigger(60UL * 60 * 1000),
       displayTrigger(1000UL) {}
 
 void Clock::begin() {
@@ -40,7 +40,7 @@ void Clock::synchronizeTime() {
   oled.appendScrollLine("Sync mit NTP...");
   ntp.begin(); // configTime() neu setzen
   if (ntp.waitForTime(10000)) {
-    oled.appendScrollLine("NTP sync OK");
+    oled.appendScrollLine(String("NTP sync OK ") + ntp.timeString());
     long driftMs = getDrift();
     oled.appendScrollLine("Drift(ms): " + String(driftMs));
   } else {

@@ -1,4 +1,7 @@
+
+#include <Arduino.h>
 #include "OledLineDisplay.h"
+#include <algorithm>
 
 OledLineDisplay::OledLineDisplay(uint8_t fixedLineCount, uint8_t scrollLineCount)
     : numFixed(fixedLineCount), numScroll(scrollLineCount)
@@ -29,6 +32,7 @@ void OledLineDisplay::shiftScrollLines() {
     scrollLines[numScroll - 1] = "";
 }
 
+/*
 void OledLineDisplay::appendScrollLine(const String& text) {
     if (numScroll == 0) return;
 
@@ -36,6 +40,28 @@ void OledLineDisplay::appendScrollLine(const String& text) {
     scrollLines[numScroll - 1] = text;
     refresh();
 }
+
+*/
+
+void OledLineDisplay::appendScrollLine(const String& text) {
+    if (numScroll == 0) return;
+
+    const int maxLineLength = 21;  // oder passend zu deinem OLED-Display
+
+    int start = 0;
+    while (start < text.length()) {
+        int end = std::min(start + maxLineLength, static_cast<int>(text.length()));
+        String line = text.substring(start, end);
+
+        shiftScrollLines();
+        scrollLines[numScroll - 1] = line;
+
+        start += maxLineLength;
+    }
+
+    refresh();
+}
+
 
 void OledLineDisplay::clearFixed() {
     for (uint8_t i = 0; i < numFixed; ++i) {
