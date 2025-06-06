@@ -3,8 +3,8 @@
 #include "OledLineDisplay.h"
 #include <algorithm>
 
-OledLineDisplay::OledLineDisplay(uint8_t fixedLineCount, uint8_t scrollLineCount)
-    : numFixed(fixedLineCount), numScroll(scrollLineCount)
+OledLineDisplay::OledLineDisplay(OledDisplay& oled, uint8_t fixedLineCount, uint8_t scrollLineCount)
+    : oled(oled), numFixed(fixedLineCount), numScroll(scrollLineCount)
 {
     fixedLines = new String[numFixed];
     scrollLines = new String[numScroll];
@@ -31,17 +31,6 @@ void OledLineDisplay::shiftScrollLines() {
     }
     scrollLines[numScroll - 1] = "";
 }
-
-/*
-void OledLineDisplay::appendScrollLine(const String& text) {
-    if (numScroll == 0) return;
-
-    shiftScrollLines();        // private Methode, nur hier definiert
-    scrollLines[numScroll - 1] = text;
-    refresh();
-}
-
-*/
 
 void OledLineDisplay::appendScrollLine(const String& text) {
     if (numScroll == 0) return;
@@ -81,23 +70,23 @@ void OledLineDisplay::clearAll() {
 }
 
 void OledLineDisplay::refresh() {
-    display.clearDisplay();
+    oled.getDisplay().clearDisplay();
 
     // Zeilenhöhe (z.B. 8 Pixel, abhängig von Font)
     const uint8_t lineHeight = 8;
 
     // Fixed lines oben zeichnen
-    display.setCursor(0, 0);
+    oled.getDisplay().setCursor(0, 0);
     for (uint8_t i = 0; i < numFixed; ++i) {
-        display.setCursor(0, i * lineHeight);
-        display.println(fixedLines[i]);
+        oled.getDisplay().setCursor(0, i * lineHeight);
+        oled.getDisplay().println(fixedLines[i]);
     }
 
     // Scroll lines unten zeichnen
     for (uint8_t i = 0; i < numScroll; ++i) {
-        display.setCursor(0, (numFixed + i) * lineHeight);
-        display.println(scrollLines[i]);
+        oled.getDisplay().setCursor(0, (numFixed + i) * lineHeight);
+        oled.getDisplay().println(scrollLines[i]);
     }
 
-    display.display();
+    oled.getDisplay().display();
 }

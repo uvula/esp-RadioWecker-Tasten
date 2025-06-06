@@ -2,9 +2,9 @@
 #include "OledDisplay.h"
 #include <Arduino.h>
 
-class OledLineDisplay : public OledDisplay {
+class OledLineDisplay {
 public:
-    OledLineDisplay(uint8_t fixedLineCount, uint8_t scrollLineCount);
+    OledLineDisplay(OledDisplay& oled, uint8_t fixedLineCount, uint8_t scrollLineCount);
     ~OledLineDisplay();
 
     void setFixedLine(uint8_t index, const String& text);
@@ -16,7 +16,8 @@ public:
 
     void refresh();
 
-private:
+protected:
+    OledDisplay& oled;
     uint8_t numFixed;
     uint8_t numScroll;
 
@@ -24,5 +25,6 @@ private:
     String* scrollLines;
 
     void shiftScrollLines();
+
 
 };

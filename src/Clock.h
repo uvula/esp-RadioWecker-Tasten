@@ -10,6 +10,7 @@ public:
     Clock(NtpClient& ntpClient, OledLineDisplay& display);
 
     void begin();
+    
     void loop();
 
 private:

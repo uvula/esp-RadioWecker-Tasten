@@ -37,3 +37,7 @@ void OledDisplay::showMessage(const String& msg) {
     display.println(msg);
     display.display();
 }
+
+Adafruit_SSD1306& OledDisplay::getDisplay() {
+    return display;
+}

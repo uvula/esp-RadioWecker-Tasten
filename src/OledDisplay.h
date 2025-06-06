@@ -4,7 +4,7 @@
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 
-class OledDisplay : public I2CDevice {
+class OledDisplay final : public I2CDevice {
 private:
     static TwoWire& getDefaultWire();
     uint8_t addr;
@@ -18,4 +18,5 @@ public:
     void showMessage(const String& msg);
     const char* name() const override;
     uint8_t address() const override;
+    Adafruit_SSD1306& getDisplay();
 };

@@ -6,6 +6,7 @@
 #include "WifiManager.h"
 #include "NtpClient.h"
 #include "Clock.h"
+#include "AlarmMenuDisplay.h"
 
 const int PIN_LED_BUILTIN = 2;
 const int PIN_SDA = 21;
@@ -13,26 +14,31 @@ const int PIN_SCL = 22;
 
 Atm_led led;
 I2CManager i2cManager(Wire, PIN_SDA, PIN_SCL); // SDA, SCL
-OledLineDisplay oled(2, 6);
+OledDisplay physicalDisplay;
+OledLineDisplay* stdDisplay = new OledLineDisplay (physicalDisplay, 2, 6);
+AlarmMenuDisplay* alarmDisplay = nullptr;
 
 WifiInfo configInfo("ESP-Setup", "configure me");
-WifiManager wifi(oled, configInfo);
-NtpClient ntp(oled);
-Clock clockx(ntp, oled);
+WifiManager wifi(*stdDisplay, configInfo);
+NtpClient ntp(*stdDisplay);
+Clock clockx(ntp, *stdDisplay);
+
 
 void setup()
 {
     Serial.begin(115200);
     Serial.println("=== Setup ==================================");
     i2cManager.begin();
-    i2cManager.registerDevice(&oled);
+    i2cManager.registerDevice(&physicalDisplay);
     Serial.println("Devices:");
     i2cManager.printDevices();
-    oled.clearFixed();
-    oled.setFixedLine(1, "Setup");
+
+    stdDisplay = new OledLineDisplay (physicalDisplay, 2, 6);
+
+    stdDisplay->clearFixed();
+    stdDisplay->setFixedLine(1, "Setup");
     led.begin(PIN_LED_BUILTIN);
     led.blink(150, 150, 3).start();
-
     wifi.begin();
     wifi.loop();
 
@@ -40,16 +46,20 @@ void setup()
     if (ntp.waitForTime()) {
         ntp.showTime();
     } else {
-        oled.appendScrollLine("NTP fehlgeschlagen");
+        stdDisplay->appendScrollLine("NTP fehlgeschlagen");
     }
-    oled.appendScrollLine("Staring clock");
+    stdDisplay->appendScrollLine("Staring clock");
     delay(1000);
-    oled.clearFixed();
+    stdDisplay->clearFixed();
     clockx.begin();
+
+    alarmDisplay = new AlarmMenuDisplay(physicalDisplay);
+    alarmDisplay->showClock("12:34:56");
+
 }
 
 void loop()
 {
-    clockx.loop(); // regelmäßig aufrufen
+//    clockx.loop(); // regelmäßig aufrufen
     automaton.run();
 }
