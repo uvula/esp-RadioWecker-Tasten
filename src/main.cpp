@@ -15,14 +15,13 @@ const int PIN_SCL = 22;
 Atm_led led;
 I2CManager i2cManager(Wire, PIN_SDA, PIN_SCL); // SDA, SCL
 OledDisplay physicalDisplay;
-OledLineDisplay* stdDisplay = new OledLineDisplay (physicalDisplay, 2, 6);
-AlarmMenuDisplay* alarmDisplay = nullptr;
+OledLineDisplay stdDisplay(physicalDisplay, 2, 6);
+AlarmMenuDisplay alarmDisplay(physicalDisplay);
 
 WifiInfo configInfo("ESP-Setup", "configure me");
-WifiManager wifi(*stdDisplay, configInfo);
-NtpClient ntp(*stdDisplay);
-Clock clockx(ntp, *stdDisplay);
-
+WifiManager wifi(stdDisplay, configInfo);
+NtpClient ntp(stdDisplay);
+Clock clockx(ntp, stdDisplay);
 
 void setup()
 {
@@ -33,10 +32,8 @@ void setup()
     Serial.println("Devices:");
     i2cManager.printDevices();
 
-    stdDisplay = new OledLineDisplay (physicalDisplay, 2, 6);
-
-    stdDisplay->clearFixed();
-    stdDisplay->setFixedLine(1, "Setup");
+    stdDisplay.clearFixed();
+    stdDisplay.setFixedLine(1, "Setup");
     led.begin(PIN_LED_BUILTIN);
     led.blink(150, 150, 3).start();
     wifi.begin();
@@ -46,15 +43,15 @@ void setup()
     if (ntp.waitForTime()) {
         ntp.showTime();
     } else {
-        stdDisplay->appendScrollLine("NTP fehlgeschlagen");
+        stdDisplay.appendScrollLine("NTP fehlgeschlagen");
     }
-    stdDisplay->appendScrollLine("Staring clock");
+    stdDisplay.appendScrollLine("Staring clock");
     delay(1000);
-    stdDisplay->clearFixed();
+    stdDisplay.clearFixed();
     clockx.begin();
 
-    alarmDisplay = new AlarmMenuDisplay(physicalDisplay);
-    alarmDisplay->showClock("12:34:56");
+    alarmDisplay.showClock("12:34:56");
+    alarmDisplay.updateAlarmDisplay();
 
 }
 

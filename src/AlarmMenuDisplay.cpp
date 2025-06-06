@@ -3,7 +3,6 @@
 AlarmMenuDisplay::AlarmMenuDisplay(OledDisplay& oled)
     : OledLineDisplay(oled, 3, 8 - 3)
 {
-    updateFixedLines();
 }
 
 void AlarmMenuDisplay::showClock(const String& timeString) {
