@@ -79,6 +79,7 @@ void OledLineDisplay::refresh() {
     oled.getDisplay().setCursor(0, 0);
     for (uint8_t i = 0; i < numFixed; ++i) {
         oled.getDisplay().setCursor(0, i * lineHeight);
+        //oled.getDisplay().setTextColor(SSD1306_BLACK, SSD1306_WHITE);
         oled.getDisplay().println(fixedLines[i]);
     }
 

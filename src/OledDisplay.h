@@ -1,8 +1,9 @@
 #pragma once
 
-#include "I2CDevice.h"
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
+#include "I2CDevice.h"
+#include "OledField.h"
 
 class OledDisplay final : public I2CDevice {
 private:
@@ -19,4 +20,5 @@ public:
     const char* name() const override;
     uint8_t address() const override;
     Adafruit_SSD1306& getDisplay();
+    void drawField(const OledField& field);
 };

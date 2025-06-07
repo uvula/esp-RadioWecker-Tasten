@@ -41,3 +41,20 @@ void OledDisplay::showMessage(const String& msg) {
 Adafruit_SSD1306& OledDisplay::getDisplay() {
     return display;
 }
+
+void OledDisplay::drawField(const OledField& field) {
+    Serial.println("Draw");
+    display.setCursor(field.getX(), field.getY());
+    Serial.println(String(field.getX()));
+    Serial.println(String(field.getY()));
+
+    if (field.getMode() == MODE_INVERSE || (field.getMode() == MODE_BLINK && field.getVisible())) {
+      display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    } else {
+      display.setTextColor(SSD1306_WHITE);
+    }
+    Serial.println(String(field.getContent()));
+
+    display.print(field.getContent());
+    display.display();
+  }

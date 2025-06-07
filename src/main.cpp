@@ -53,6 +53,10 @@ void setup()
     alarmDisplay.showClock("12:34:56");
     alarmDisplay.updateAlarmDisplay();
 
+    physicalDisplay.showMessage(String("Test"));
+    OledField hhField(20, 20, "99");
+    physicalDisplay.drawField(hhField);
+
 }
 
 void loop()
